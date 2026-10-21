@@ -1,0 +1,4 @@
+-keep class com.identvia.android.IdentviaAuthActivity
+-keep class com.identvia.android.IdentviaRedirectActivity
+-keepclassmembers class com.identvia.core.** { *** Companion; }
+-keepclasseswithmembers class com.identvia.core.** { kotlinx.serialization.KSerializer serializer(...); }

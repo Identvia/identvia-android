@@ -1,0 +1,6 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="identvia_sign_in">Sign in with Identvia</string>
+    <string name="identvia_continue">Continue with Identvia</string>
+    <string name="identvia_sign_up">Sign up with Identvia</string>
+</resources>

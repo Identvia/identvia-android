@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
+    <uses-permission android:name="android.permission.INTERNET" />
+
+    <!-- Package visibility (API 30+): find browsers that support Custom Tabs. -->
+    <queries>
+        <intent>
+            <action android:name="android.support.customtabs.action.CustomTabsService" />
+        </intent>
+        <intent>
+            <action android:name="android.intent.action.VIEW" />
+            <category android:name="android.intent.category.BROWSABLE" />
+            <data android:scheme="https" />
+        </intent>
+    </queries>
+
+    <application>
+        <!-- Opens the Custom Tab and waits for the redirect. Not exported. -->
+        <activity
+            android:name="com.identvia.android.IdentviaAuthActivity"
+            android:exported="false"
+            android:launchMode="singleTask"
+            android:theme="@style/Identvia.Transparent" />
+
+        <!--
+          Receives the redirect. Set the scheme in your app's build.gradle:
+            defaultConfig { manifestPlaceholders["identviaRedirectScheme"] = "com.example.app" }
+          For an https App Link redirect, add your own autoVerify intent filter to this activity instead.
+        -->
+        <activity
+            android:name="com.identvia.android.IdentviaRedirectActivity"
+            android:exported="true"
+            android:theme="@style/Identvia.Transparent">
+            <intent-filter>
+                <action android:name="android.intent.action.VIEW" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <category android:name="android.intent.category.BROWSABLE" />
+                <data android:scheme="${identviaRedirectScheme}" />
+            </intent-filter>
+        </activity>
+    </application>
+</manifest>
