@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.1 (2026-10-21)
+
+- Repository hygiene: `.gitignore` now excludes APK/AAB files, keystores and local live-test state. No code changes.
+
 ## 0.1.0 — 2026-10-21
 
 - First release.
