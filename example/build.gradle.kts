@@ -11,8 +11,8 @@ android {
         minSdk = 23
         targetSdk = 34
         versionCode = 1
-        versionName = "0.1.0"
-        // Register com.example.identvianotes:/oauth/identvia on a *public* Identvia client.
+        versionName = "0.1.2"
+        // Register com.example.identvianotes:/oauth/identvia on a Native & desktop (public) Identvia client.
         manifestPlaceholders["identviaRedirectScheme"] = "com.example.identvianotes"
         buildConfigField("String", "IDENTVIA_CLIENT_ID", "\"${project.findProperty("identviaClientId") ?: "oid_your_client_id"}\"")
     }

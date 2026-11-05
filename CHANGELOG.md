@@ -1,5 +1,9 @@
 # Changelog
 
+## 0.1.2 (2026-11-05)
+
+- Example: register `com.example.identvianotes:/oauth/identvia` on a **Native & desktop** portal client.
+
 ## 0.1.1 (2026-10-21)
 
 - Repository hygiene: `.gitignore` now excludes APK/AAB files, keystores and local live-test state. No code changes.
