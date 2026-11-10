@@ -1,0 +1,56 @@
+# Publishes com.identvia:identvia-core and com.identvia:identvia-android to Maven Central (Central Portal)
+# when a version tag (v1.2.3) is pushed. Uses com.vanniktech.maven.publish with in-memory GPG signing.
+#
+# Repository secrets (Settings -> Secrets and variables -> Actions):
+#   MAVEN_CENTRAL_USERNAME / MAVEN_CENTRAL_PASSWORD  Central Portal user token (central.sonatype.com -> View Account -> Generate User Token)
+#   GPG_SIGNING_KEY / GPG_SIGNING_PASSWORD           ASCII-armored private key + passphrase (public key on keys.openpgp.org and keyserver.ubuntu.com)
+# The com.identvia namespace must be verified on central.sonatype.com before the first upload.
+#
+# A version that is already on Maven Central is skipped. Run it manually (workflow_dispatch) for a dry run:
+# it builds, tests and runs a signed publishToMavenLocal.
+name: Release
+on:
+  push:
+    tags: ['v[0-9]+.[0-9]+.[0-9]+']
+  workflow_dispatch:
+permissions: { contents: read }
+concurrency: { group: release-maven, cancel-in-progress: false }
+jobs:
+  publish:
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+    environment: maven-central
+    env:
+      ORG_GRADLE_PROJECT_mavenCentralUsername: ${{ secrets.MAVEN_CENTRAL_USERNAME }}
+      ORG_GRADLE_PROJECT_mavenCentralPassword: ${{ secrets.MAVEN_CENTRAL_PASSWORD }}
+      ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_SIGNING_KEY }}
+      ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_SIGNING_PASSWORD }}
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-java@v4
+        with: { distribution: temurin, java-version: '17' }
+      - uses: gradle/actions/setup-gradle@v4
+      - name: Tag matches the Gradle version
+        id: ver
+        run: |
+          v=$(sed -n 's/^ *version = "\(.*\)"/\1/p' build.gradle.kts)
+          echo "version=$v" >> "$GITHUB_OUTPUT"
+          if [ "$GITHUB_REF_TYPE" = tag ] && [ "v$v" != "$GITHUB_REF_NAME" ]; then echo "::error::build.gradle.kts is $v but the tag is $GITHUB_REF_NAME"; exit 1; fi
+      - name: Signing key is configured
+        run: '[ -n "$ORG_GRADLE_PROJECT_signingInMemoryKey" ] || { echo "::error::GPG_SIGNING_KEY secret is missing"; exit 1; }'
+      - run: ./gradlew :identvia-core:test :identvia-android:assembleRelease :identvia-android:lintRelease
+      - name: Signed dry run (publishToMavenLocal)
+        run: |
+          ./gradlew publishToMavenLocal
+          ls -1 ~/.m2/repository/com/identvia/*/${{ steps.ver.outputs.version }}/
+          ls ~/.m2/repository/com/identvia/*/${{ steps.ver.outputs.version }}/*.asc >/dev/null
+      - name: Already on Maven Central?
+        id: exists
+        run: |
+          code=$(curl -s -o /dev/null -w '%{http_code}' "https://repo1.maven.org/maven2/com/identvia/identvia-android/${{ steps.ver.outputs.version }}/identvia-android-${{ steps.ver.outputs.version }}.pom")
+          echo "published=$([ "$code" = 200 ] && echo true || echo false)" >> "$GITHUB_OUTPUT"
+      - name: Upload and release to Maven Central
+        if: github.ref_type == 'tag' && steps.exists.outputs.published != 'true'
+        run: |
+          [ -n "$ORG_GRADLE_PROJECT_mavenCentralUsername" ] || { echo "::error::MAVEN_CENTRAL_USERNAME / MAVEN_CENTRAL_PASSWORD secrets are missing"; exit 1; }
+          ./gradlew publishAndReleaseToMavenCentral --no-configuration-cache

@@ -1,5 +1,10 @@
 # Changelog
 
+## 0.1.3 (2026-11-09)
+
+- First release on Maven Central: `com.identvia:identvia-android` and `com.identvia:identvia-core`. Publishing runs from GitHub Actions (`release.yml`) through the Central Portal, with GPG-signed artifacts, sources and javadoc jars.
+- POM metadata: name, description, `https://identvia.com`, MIT license, developer, SCM and issue tracker. No code changes.
+
 ## 0.1.2 (2026-11-05)
 
 - Example: register `com.example.identvianotes:/oauth/identvia` on a **Native & desktop** portal client.

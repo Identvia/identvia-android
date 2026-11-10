@@ -1,5 +1,9 @@
 # Identvia for Android
 
+[![Maven Central](https://img.shields.io/maven-central/v/com.identvia/identvia-android)](https://central.sonatype.com/artifact/com.identvia/identvia-android)
+[![CI](https://github.com/Identvia/identvia-android/actions/workflows/ci.yml/badge.svg)](https://github.com/Identvia/identvia-android/actions/workflows/ci.yml)
+[![License: MIT](https://img.shields.io/badge/license-MIT-blue.svg)](LICENSE)
+
 Sign in with [Identvia](https://identvia.com) on Android 6.0+ (API 23). OpenID Connect with PKCE in **Chrome Custom Tabs**, AndroidKeyStore-encrypted session storage, refresh-token rotation, Kotlin coroutines and a branded button.
 
 - **Public client.** Never ship a client secret in an app; the SDK has no secret option.
@@ -9,7 +13,7 @@ Sign in with [Identvia](https://identvia.com) on Android 6.0+ (API 23). OpenID C
 
 ```kotlin
 dependencies {
-    implementation("com.identvia:identvia-android:0.1.0")
+    implementation("com.identvia:identvia-android:0.1.3") // from mavenCentral()
 }
 
 android {
@@ -24,7 +28,7 @@ android {
 
 ## 1. Register
 
-At <https://identvia.com/developers>, create a **public** (native) client with the redirect URI `com.example.app:/oauth/identvia`. That's a reverse-domain scheme (RFC 8252 §7.1). Verified App Links (`https://`) work too: add your own `autoVerify` intent filter to `com.identvia.android.IdentviaRedirectActivity`.
+At <https://id.identvia.com/developers>, create a **public** (native) client with the redirect URI `com.example.app:/oauth/identvia`. That's a reverse-domain scheme (RFC 8252 §7.1). Verified App Links (`https://`) work too: add your own `autoVerify` intent filter to `com.identvia.android.IdentviaRedirectActivity`.
 
 ## 2. Quickstart
 

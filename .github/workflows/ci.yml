@@ -18,4 +18,10 @@ jobs:
       - uses: gradle/actions/setup-gradle@v4
       - run: ./gradlew :identvia-core:test
       - run: ./gradlew :identvia-android:assembleRelease :identvia-android:lintRelease :example:assembleDebug
-      - run: ./gradlew publishToMavenLocal
+      - name: publishToMavenLocal (signed when the GPG secrets are available)
+        env:
+          ORG_GRADLE_PROJECT_signingInMemoryKey: ${{ secrets.GPG_SIGNING_KEY }}
+          ORG_GRADLE_PROJECT_signingInMemoryKeyPassword: ${{ secrets.GPG_SIGNING_PASSWORD }}
+        run: |
+          ./gradlew publishToMavenLocal
+          find ~/.m2/repository/com/identvia -type f | sort
